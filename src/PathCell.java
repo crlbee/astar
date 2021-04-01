@@ -1,15 +1,24 @@
 import java.util.Objects;
 
-public class Cell {
+public class PathCell {
+    private static final int MOVE_COST = 1;
+
     public final int x;
     public final int y;
     private int heuristicCost;
     private int finalCost;
-    public Cell parent;
+    private PathCell previous;
 
-    public Cell(int y, int x) {
+    public PathCell(int x, int y) {
         this.x = x;
         this.y = y;
+    }
+
+    public PathCell(int x, int y, Grid grid, PathCell current){
+        this(x, y);
+        heuristicCost = Math.abs(y - grid.getEndPathCell().y) + Math.abs(x - grid.getEndPathCell().x);
+        finalCost = heuristicCost + current.getFinalCost() - current.getHeuristicCost() + MOVE_COST;
+        previous = current;
     }
 
     public int getHeuristicCost() {
@@ -28,12 +37,20 @@ public class Cell {
         this.finalCost = finalCost;
     }
 
+    public void setPrevious(PathCell previous) {
+        this.previous = previous;
+    }
+
+    public PathCell getPrevious() {
+        return previous;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        Cell cell = (Cell) o;
-        return x == cell.x && y == cell.y;
+        PathCell pathCell = (PathCell) o;
+        return x == pathCell.x && y == pathCell.y;
     }
 
     @Override
